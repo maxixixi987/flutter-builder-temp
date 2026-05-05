@@ -62,7 +62,12 @@ jobs:
       - name: Build Flutter APK
         if: github.event.inputs.project_type == 'flutter'
         run: |
-          cd /home/runner/work/_temp/project
+          # Kita masuk ke folder work_dir yang udah dibuat pas download ZIP
+          cd work_dir
+          
+          # Cek isi folder biar kita nggak ketipu
+          ls -R
+          
           flutter pub get
           if [ "${{ github.event.inputs.build_type }}" = "release" ]; then
             flutter build apk --release
@@ -70,6 +75,7 @@ jobs:
             flutter build apk --debug
           fi
           ls -la build/app/outputs/flutter-apk/
+
       
       - name: Build Android APK
         if: github.event.inputs.project_type == 'android'
