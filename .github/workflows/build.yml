@@ -62,11 +62,16 @@ jobs:
       - name: Build Flutter APK
         if: github.event.inputs.project_type == 'flutter'
         run: |
-          # Kita masuk ke folder work_dir yang udah dibuat pas download ZIP
-          cd work_dir
+          # Cari di mana file pubspec.yaml berada
+          PUBSPEC_PATH=$(find . -name "pubspec.yaml" -exec dirname {} \;)
           
-          # Cek isi folder biar kita nggak ketipu
-          ls -R
+          if [ -z "$PUBSPEC_PATH" ]; then
+            echo "❌ ERROR: File pubspec.yaml tidak ditemukan di folder manapun!"
+            exit 1
+          fi
+          
+          echo "✅ Menemukan project di: $PUBSPEC_PATH"
+          cd "$PUBSPEC_PATH"
           
           flutter pub get
           if [ "${{ github.event.inputs.build_type }}" = "release" ]; then
@@ -74,8 +79,6 @@ jobs:
           else
             flutter build apk --debug
           fi
-          ls -la build/app/outputs/flutter-apk/
-
       
       - name: Build Android APK
         if: github.event.inputs.project_type == 'android'
