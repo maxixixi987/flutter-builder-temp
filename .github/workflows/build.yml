@@ -34,11 +34,14 @@ jobs:
       
       - name: Download project ZIP
         run: |
-          cd /home/runner/work/_temp
+          mkdir -p work_dir
           wget -O project.zip "${{ github.event.inputs.project_zip_url }}"
-          mkdir -p project
-          unzip -o project.zip -d project/
-          ls -la project/
+          unzip -o project.zip -d work_dir/
+          # Otomatis deteksi folder apapun di dalemnya
+          INNER_FOLDER=$(ls -d work_dir/*/ | head -n 1)
+          mv $INNER_FOLDER* work_dir/ || true
+          ls -la work_dir/
+
       
       - name: Setup Java
         uses: actions/setup-java@v4
